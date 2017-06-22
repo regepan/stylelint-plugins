@@ -1,5 +1,5 @@
 {
-  "name": "stylelint-no-duplicate-selector",
+  "name": "stylelint-plugins",
   "version": "1.0.0",
   "description": "This is just added ignore selector option.",
   "main": "index.js",
@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/regepan/stylelint-no-duplicate-selector.git"
+    "url": "git+https://github.com/regepan/stylelint-plugins.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/regepan/stylelint-no-duplicate-selector/issues"
+    "url": "https://github.com/regepan/stylelint-plugins/issues"
   },
-  "homepage": "https://github.com/regepan/stylelint-no-duplicate-selector#readme"
+  "homepage": "https://github.com/regepan/stylelint-plugins#readme"
 }

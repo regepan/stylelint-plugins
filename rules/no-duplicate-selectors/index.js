@@ -11,7 +11,7 @@ const normalizeSelector = require("normalize-selector")
 const resolvedNestedSelector = require("postcss-resolve-nested-selector")
 const utils = require('../../utils')
 
-const ruleName = utils.namespace('stylelint-no-duplicate-selector');
+const ruleName = utils.namespace('no-duplicate-selector');
 
 
 const messages = ruleMessages(ruleName, {

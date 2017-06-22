@@ -1,4 +1,4 @@
-const prefix = 'stylelint-no-duplicate-selector';
+const prefix = 'stylelint-plugins';
 
 module.exports = function namespace(ruleName) {
 	return `${prefix}/${ruleName}`;
