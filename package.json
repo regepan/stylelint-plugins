@@ -1,0 +1,19 @@
+{
+  "name": "stylelint-no-duplicate-selector",
+  "version": "1.0.0",
+  "description": "This is just added ignore selector option.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/regepan/stylelint-no-duplicate-selector.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/regepan/stylelint-no-duplicate-selector/issues"
+  },
+  "homepage": "https://github.com/regepan/stylelint-no-duplicate-selector#readme"
+}
