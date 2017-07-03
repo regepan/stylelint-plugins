@@ -13,18 +13,44 @@ const utils = require('../../utils')
 
 const ruleName = utils.namespace('no-duplicate-selector');
 
-
 const messages = ruleMessages(ruleName, {
   rejected: (selector, firstDuplicateLine) => `Unexpected duplicate selector "${selector}", first used at line ${firstDuplicateLine}`,
 })
 
+const isIgnore = function (optionIgnoreIndexOfMatch, optionIgnoreStrictEquality, selector) {
+  let isMatched = false
+
+  optionIgnoreStrictEquality.some((optionIgnoreStrictEqualitySelector, i) => {
+    if (selector === optionIgnoreStrictEqualitySelector) {
+      isMatched = true
+
+      return true
+    }
+  })
+
+  if (isMatched) {
+    return true
+  }
+
+  optionIgnoreIndexOfMatch.some((optionIgnoreIndexOfMatchSelector, i) => {
+    if (selector.indexOf(optionIgnoreIndexOfMatchSelector) !== -1) {
+      isMatched = true
+
+      return true
+    }
+  })
+
+  return isMatched
+}
+
 const rule = function (actual) {
-  const optionIgnore = [].concat(actual.ignore)
+  const optionIgnoreIndexOfMatch = [].concat(actual.ignoreIndexOfMatch)
+  const optionIgnoreStrictEquality = [].concat(actual.ignoreStrictEquality)
 
   return (root, result) => {
     const validOptions = validateOptions(result, ruleName, {
-        actual: optionIgnore,
-        possible: [_.isString]
+      actual: optionIgnoreIndexOfMatch,
+      possible: [_.isString]
     })
 
     if (!validOptions) {
@@ -55,9 +81,8 @@ const rule = function (actual) {
       // doesn't matter
       const sortedSelectorList = normalizedSelectorList.slice().sort().join(",")
 
-      if (optionIgnore.indexOf(sortedSelectorList) !== -1) {
-
-          return
+      if (isIgnore(optionIgnoreIndexOfMatch, optionIgnoreStrictEquality, sortedSelectorList)) {
+        return
       }
 
       if (contextSelectorSet.has(sortedSelectorList)) {
