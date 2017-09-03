@@ -13,62 +13,41 @@ const utils = require('../../utils');
 const ruleName = utils.namespace('file-name-match');
 
 const messages = ruleMessages(ruleName, {
-  rejected: (selector, fileName) => `Need to move "${selector}" to "${fileName}"`,
+  rejected: (selector, fileName) => `Move "${selector}" to "${fileName}"`
 });
 
 const rule = function (actual) {
-  const optionIgnoreIndexOfMatch = [].concat(actual.ignoreIndexOfMatch);
-  const optionIgnoreStrictEquality = [].concat(actual.ignoreStrictEquality);
+  const optionSelectorAndFileNameMap = actual.selectorAndFileNameMap
 
   return (root, result) => {
     const validOptions = validateOptions(result, ruleName, {
-      actual: optionIgnoreIndexOfMatch,
-      possible: [_.isString]
-    })
+      actual: optionSelectorAndFileNameMap,
+      possible: [_.isObject]
+    });
 
     if (!validOptions) {
       return
     }
 
-    // The top level of this map will be rule sources.
-    // Each source maps to another map, which maps rule parents to a set of selectors.
-    // This ensures that selectors are only checked against selectors
-    // from other rules that share the same parent and the same source.
-    const selectorContextLookup = nodeContextLookup();
-
     root.walkRules(rule => {
-      const resolvedSelectors = rule.selectors.reduce((result, selector) => {
-        return _.union(result, resolvedNestedSelector(selector, rule))
-      }, []);
-      const normalizedSelectorList = resolvedSelectors.map(normalizeSelector);
-      const selectorLine = rule.source.start.line
-
       const ruleSourceInputFrom = rule.source.input.from;
       const ruleSourceInputFromFileName = ruleSourceInputFrom.split('/').pop();
-      const selectorAndFileNameMap = {
-        'hr': {
-          'regex': 'scaffolding',
-          'correctFileName': '_scaffolding.scss'
-        },
-        'btn': {
-          'regex': 'btn',
-          'correctFileName': '_btn.scss'
-        },
-        'breadcrumb': {
-          'regex': 'breadcrumb',
-          'correctFileName': '_breadcrumbs.scss'
-        }
-      };
-      const selectorName = rule.selector.replace(/^\./, '');
   
-      // Check if the "selectorAndFileNameMap" has the key selector.
-      if (selectorName in selectorAndFileNameMap) {
-        if (ruleSourceInputFromFileName.indexOf(selectorAndFileNameMap[selectorName]['regex']) === -1) {
+      let selectorName = rule.selector.replace(/^\./, '');
+      const selectorPrefixName = selectorName.match(/^(.*?)\-.*?/);
+  
+      if (selectorPrefixName) {
+        selectorName = selectorPrefixName[1];
+      }
+  
+      // Check if the "optionSelectorAndFileNameMap" has the key selector.
+      if (selectorName in optionSelectorAndFileNameMap) {
+        if (ruleSourceInputFromFileName != optionSelectorAndFileNameMap[selectorName]) {
           return report({
             result,
             ruleName,
             node: rule,
-            message: messages.rejected(rule.selector, selectorAndFileNameMap[selectorName]['correctFileName']),
+            message: messages.rejected(rule.selector, optionSelectorAndFileNameMap[selectorName]),
           })
         }
       }
