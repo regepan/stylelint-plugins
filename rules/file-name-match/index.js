@@ -1,7 +1,6 @@
 "use strict"
 
 const findAtRuleContext = require("../../utils/findAtRuleContext")
-const isKeyframeRule = require("../../utils/isKeyframeRule")
 const nodeContextLookup = require("../../utils/nodeContextLookup")
 const report = require("../../utils/report")
 const ruleMessages = require("../../utils/ruleMessages")
@@ -16,32 +15,6 @@ const ruleName = utils.namespace('file-name-match')
 const messages = ruleMessages(ruleName, {
   rejected: (selector, firstDuplicateLine) => `Error!!!`,
 })
-
-const isIgnore = function (optionIgnoreIndexOfMatch, optionIgnoreStrictEquality, selector) {
-  let isMatched = false
-
-  optionIgnoreStrictEquality.some((optionIgnoreStrictEqualitySelector, i) => {
-    if (selector === optionIgnoreStrictEqualitySelector) {
-      isMatched = true
-
-      return true
-    }
-  })
-
-  if (isMatched) {
-    return true
-  }
-
-  optionIgnoreIndexOfMatch.some((optionIgnoreIndexOfMatchSelector, i) => {
-    if (selector.indexOf(optionIgnoreIndexOfMatchSelector) !== -1) {
-      isMatched = true
-
-      return true
-    }
-  })
-
-  return isMatched
-}
 
 const rule = function (actual) {
   const optionIgnoreIndexOfMatch = [].concat(actual.ignoreIndexOfMatch)
@@ -64,56 +37,42 @@ const rule = function (actual) {
     const selectorContextLookup = nodeContextLookup()
 
     root.walkRules(rule => {
-      if (isKeyframeRule(rule)) {
-        return
-      }
-
       const contextSelectorSet = selectorContextLookup.getContext(rule, findAtRuleContext(rule))
       const resolvedSelectors = rule.selectors.reduce((result, selector) => {
         return _.union(result, resolvedNestedSelector(selector, rule))
       }, [])
-      const normalizedSelectorList = resolvedSelectors.map(normalizeSelector)
-      const selectorLine = rule.source.start.line
+      // const normalizedSelectorList = resolvedSelectors.map(normalizeSelector)
+      // const selectorLine = rule.source.start.line
 
-      // Complain if the same selector list occurs twice
+    const ruleSourceInputFrom = rule.source.input.from
+    const ruleSourceInputFromFileName = ruleSourceInputFrom.split('/').pop()
+    const selectorAndFileNameMap = {
+      'hr': 'scaffolding',
+      'btn': 'btn',
+      'breadcrumb': 'breadcrumb'
+    }
+    const selectorName = rule.selector.replace(/^\./, '')
 
-      // Sort the selectors list so that the order of the constituents
-      // doesn't matter
-      const sortedSelectorList = normalizedSelectorList.slice().sort().join(",")
-
-      if (isIgnore(optionIgnoreIndexOfMatch, optionIgnoreStrictEquality, sortedSelectorList)) {
-        return
+    if (selectorName in selectorAndFileNameMap) {
+      if (ruleSourceInputFromFileName.indexOf(selectorAndFileNameMap[selectorName]) > -1) {
+        return true;
       }
+    }
 
-      if (contextSelectorSet.has(sortedSelectorList)) {
-        // If the selector isn't nested we can use its raw value; otherwise,
-        // we have to approximate something for the message -- which is close enough
-        const isNestedSelector = resolvedSelectors.join(",") !== rule.selectors.join(",")
-        const selectorForMessage = isNestedSelector ? resolvedSelectors.join(", ") : rule.selector
-        const previousDuplicatePosition = contextSelectorSet.get(sortedSelectorList)
+    if (true) {
+      console.error('  error:', 'file name match error...')
+      process.exit(1)
+    }
 
-        return report({
-          result,
-          ruleName,
-          node: rule,
-          message: messages.rejected(selectorForMessage, previousDuplicatePosition),
-        })
-      }
-
-      contextSelectorSet.set(sortedSelectorList, selectorLine)
-
-      // Or complain if one selector list contains the same selector more than one
-      rule.selectors.forEach((selector, i) => {
-        if (_.includes(normalizedSelectorList.slice(0, i), normalizeSelector(selector))) {
-          report({
-            result,
-            ruleName,
-            node: rule,
-            message: messages.rejected(selector, selectorLine),
-          })
-        }
+    if (contextSelectorSet.has(sortedSelectorList)) {
+      return report({
+        result,
+        ruleName,
+        node: rule,
+        message: messages.rejected(selectorForMessage, previousDuplicatePosition),
       })
-    })
+    }
+  })
   }
 }
 
