@@ -1,12 +1,9 @@
 "use strict";
 
-const findAtRuleContext = require("../../utils/findAtRuleContext");
-const nodeContextLookup = require("../../utils/nodeContextLookup");
 const report = require("../../utils/report");
 const ruleMessages = require("../../utils/ruleMessages");
 const validateOptions = require("../../utils/validateOptions");
 const _ = require("lodash");
-const resolvedNestedSelector = require("postcss-resolve-nested-selector");
 const utils = require('../../utils');
 
 const ruleName = utils.namespace('file-name-match');
@@ -16,7 +13,7 @@ const messages = ruleMessages(ruleName, {
 });
 
 const rule = function (actual) {
-  const optionSelectorAndFileNameMap = actual.selectorAndFileNameMap
+  const optionSelectorAndFileNameMap = actual.selectorAndFileNameMap;
 
   return (root, result) => {
     const validOptions = validateOptions(result, ruleName, {
