@@ -6,7 +6,6 @@ const report = require("../../utils/report");
 const ruleMessages = require("../../utils/ruleMessages");
 const validateOptions = require("../../utils/validateOptions");
 const _ = require("lodash");
-const normalizeSelector = require("normalize-selector");
 const resolvedNestedSelector = require("postcss-resolve-nested-selector");
 const utils = require('../../utils');
 
