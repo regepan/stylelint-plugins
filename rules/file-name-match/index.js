@@ -26,30 +26,40 @@ const rule = function (actual) {
     }
 
     root.walkRules(rule => {
-      const ruleSourceInputFrom = rule.source.input.from;
-      const ruleSourceInputFromFileName = ruleSourceInputFrom.split('/').pop();
-  
-      let selectorName = rule.selector.replace(/^\./, '');
-      const selectorPrefixName = selectorName.match(/^(.*?)\-.*?/);
-  
+      if (rule.parent.selector) {
+        return;
+      }
+
+      const inputFrom = rule.source.input.from;
+      const inputFromFileName = inputFrom.split('/').pop();
+
+      let selectorName = rule.selector;
+      const selectorPrefixName = rule.selector.match(/^(.*?-).*?/);
+
+      if (!selectorPrefixName) {
+        return;
+      }
+
       if (selectorPrefixName) {
         selectorName = selectorPrefixName[1];
       }
-  
+
+      const rawSelectorName = selectorName.replace('.', '').replace('-', '');
+
       // Check if the "optionSelectorAndFileNameMap" has the key selector.
-      if (selectorName in optionSelectorAndFileNameMap) {
-        if (ruleSourceInputFromFileName != optionSelectorAndFileNameMap[selectorName]) {
+      if (rawSelectorName in optionSelectorAndFileNameMap) {
+        if (inputFromFileName != optionSelectorAndFileNameMap[rawSelectorName]) {
           return report({
             result,
             ruleName,
             node: rule,
-            message: messages.rejected(rule.selector, optionSelectorAndFileNameMap[selectorName]),
+            message: messages.rejected(rule.selector, optionSelectorAndFileNameMap[rawSelectorName]),
           })
         }
       }
     })
   }
-}
+};
 
 rule.ruleName = ruleName;
 rule.messages = messages;
