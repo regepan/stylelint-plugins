@@ -49,7 +49,7 @@ const rule = function (actual) {
       // Check if the "optionSelectorAndFileNameMap" has the key selector.
       if (rawSelectorName in optionSelectorAndFileNameMap) {
         
-        console.log( nputFromFileName + ' != ' + optionSelectorAndFileNameMap[rawSelectorName]);
+        console.log(inputFromFileName + ' != ' + optionSelectorAndFileNameMap[rawSelectorName]);
         
         if (inputFromFileName != optionSelectorAndFileNameMap[rawSelectorName]) {
           return report({
