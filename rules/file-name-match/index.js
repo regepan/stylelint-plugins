@@ -29,10 +29,10 @@ const rule = function (actual) {
       if (rule.parent.selector) {
         return;
       }
-
-      const inputFrom = rule.source.input.from;
-      const inputFromFileName = inputFrom.split('/').pop();
-
+      
+      const pathObject = path.parse(rule.source.input.from);
+      const inputFromFileName = pathObject['base'];
+      
       let selectorName = rule.selector;
       const selectorPrefixName = rule.selector.match(/^(.*?-).*?/);
 
