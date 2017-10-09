@@ -17,9 +17,8 @@
   },
   "homepage": "https://github.com/regepan/stylelint-plugins#readme",
   "dependencies": {
-    "lodash": "^4.17.4"
-  },
-  "devDependencies": {
+    "lodash": "^4.17.4",
     "path": "^0.12.7"
-  }
+  },
+  "devDependencies": {}
 }
