@@ -26,7 +26,7 @@ const rule = function (actual) {
     }
 
     root.walkRules(rule => {
-      if (rule.parent.selector) {
+      if (rule.parent.type !== 'root') {
         return;
       }
       
@@ -49,7 +49,7 @@ const rule = function (actual) {
       // Check if the "optionSelectorAndFileNameMap" has the key selector.
       if (rawSelectorName in optionSelectorAndFileNameMap) {
         
-        console.log(inputFromFileName + ' != ' + optionSelectorAndFileNameMap[rawSelectorName]);
+        // console.log(inputFromFileName + ' != ' + optionSelectorAndFileNameMap[rawSelectorName]);
         
         if (inputFromFileName != optionSelectorAndFileNameMap[rawSelectorName]) {
           return report({
