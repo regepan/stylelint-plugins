@@ -5,6 +5,7 @@ const ruleMessages = require("../../utils/ruleMessages");
 const validateOptions = require("../../utils/validateOptions");
 const _ = require("lodash");
 const utils = require('../../utils');
+const path = require('path');
 
 const ruleName = utils.namespace('file-name-match');
 
