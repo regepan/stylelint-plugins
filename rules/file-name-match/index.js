@@ -33,31 +33,25 @@ const rule = function (actual) {
       
       const pathObject = path.parse(rule.source.input.from);
       const inputFromFileName = pathObject['base'];
-      
+      let keySelector = null;
+
       let selectorName = rule.selector;
-      const selectorPrefixName = rule.selector.match(/^(.*?-).*?/);
+      const selectorPrefix = rule.selector.match(/^(.*?-).*?/);
 
-      if (!selectorPrefixName) {
-        return;
+      if (Array.isArray(selectorPrefix)) {
+        selectorName = selectorPrefix[1];
+        keySelector = selectorName.replace('-', '');
+      } else {
+        keySelector = selectorName;
       }
 
-      if (selectorPrefixName) {
-        selectorName = selectorPrefixName[1];
-      }
-
-      const rawSelectorName = selectorName.replace('.', '').replace('-', '');
-
-      // Check if the "optionSelectorAndFileNameMap" has the key selector.
-      if (rawSelectorName in optionSelectorAndFileNameMap) {
-        
-        // console.log(inputFromFileName + ' != ' + optionSelectorAndFileNameMap[rawSelectorName]);
-        
-        if (inputFromFileName != optionSelectorAndFileNameMap[rawSelectorName]) {
+      if (keySelector in optionSelectorAndFileNameMap) {
+        if (inputFromFileName !== optionSelectorAndFileNameMap[keySelector]) {
           return report({
             result,
             ruleName,
             node: rule,
-            message: messages.rejected(rule.selector, optionSelectorAndFileNameMap[rawSelectorName]),
+            message: messages.rejected(rule.selector, optionSelectorAndFileNameMap[keySelector]),
           })
         }
       }
