@@ -5,21 +5,18 @@ const ruleMessages = require("../../utils/ruleMessages");
 const validateOptions = require("../../utils/validateOptions");
 const _ = require("lodash");
 const utils = require('../../utils');
-const path = require('path');
 
 const ruleName = utils.namespace('selector-blacklist');
 
 const messages = ruleMessages(ruleName, {
-  rejected: (selector, fileName) => `Move "${selector}" to "${fileName}"`
+  rejected: (selector) => `"${selector}" is not allowed class name.`
 });
 
 const rule = function (actual) {
-  const optionSelectorAndFileNameMap = actual.selectorAndFileNameMap;
-
   return (root, result) => {
     const validOptions = validateOptions(result, ruleName, {
-      actual: optionSelectorAndFileNameMap,
-      possible: [_.isObject]
+      actual: actual.blacklist,
+      possible: _.isArray
     });
 
     if (!validOptions) {
@@ -27,34 +24,15 @@ const rule = function (actual) {
     }
 
     root.walkRules(rule => {
-      if (rule.parent.type !== 'root') {
-        return;
-      }
-      
-      const pathObject = path.parse(rule.source.input.from);
-      const inputFromFileName = pathObject['base'];
-      let keySelector = null;
-
-      let selectorName = rule.selector;
-      const selectorPrefix = rule.selector.match(/^(.*?-).*?/);
-
-      if (Array.isArray(selectorPrefix)) {
-        selectorName = selectorPrefix[1];
-        keySelector = selectorName.replace('-', '');
-      } else {
-        keySelector = selectorName;
+      if (actual.blacklist.indexOf(rule.selector) >= 0) {
+        return report({
+          result,
+          ruleName,
+          node: rule,
+          message: messages.rejected(rule.selector),
+        })
       }
 
-      if (keySelector in optionSelectorAndFileNameMap) {
-        if (inputFromFileName !== optionSelectorAndFileNameMap[keySelector]) {
-          return report({
-            result,
-            ruleName,
-            node: rule,
-            message: messages.rejected(rule.selector, optionSelectorAndFileNameMap[keySelector]),
-          })
-        }
-      }
     })
   }
 };
