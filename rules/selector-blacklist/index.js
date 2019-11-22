@@ -12,6 +12,15 @@ const messages = ruleMessages(ruleName, {
   rejected: (selector) => `"${selector}" is not allowed class name.`
 });
 
+const errorReport = function (result, ruleName, rule, message) {
+  return report({
+    result,
+    ruleName,
+    node: rule,
+    message: message,
+  })
+};
+
 const rule = function (actual) {
   return (root, result) => {
     const validOptions = validateOptions(result, ruleName, {
@@ -24,13 +33,22 @@ const rule = function (actual) {
     }
 
     root.walkRules(rule => {
-      if (actual.blacklist.indexOf(rule.selector) >= 0) {
-        return report({
-          result,
-          ruleName,
-          node: rule,
-          message: messages.rejected(rule.selector),
-        })
+      const blacklist = actual.blacklist;
+
+      for (var i = 0; i < blacklist.length; i++) {
+        if (typeof blacklist[i] === "string") {
+          if (blacklist[i].indexOf(rule.selector) >= 0) {
+            return errorReport(result, ruleName, rule, messages.rejected(rule.selector));
+          }
+
+        } else if (typeof blacklist[i] === "object") {
+          for (const key in blacklist[i]) {
+            if (key.indexOf(rule.selector) >= 0) {
+              return errorReport(result, ruleName, rule, blacklist[i][key]);
+            }
+
+          }
+        }
       }
 
     })
