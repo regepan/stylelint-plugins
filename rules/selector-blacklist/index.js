@@ -34,16 +34,17 @@ const rule = function (actual) {
 
     root.walkRules(rule => {
       const blacklist = actual.blacklist;
+      const selector = rule.selector.trim();
 
       for (var i = 0; i < blacklist.length; i++) {
         if (typeof blacklist[i] === "string") {
-          if (blacklist[i].indexOf(rule.selector) >= 0) {
-            return errorReport(result, ruleName, rule, messages.rejected(rule.selector));
+          if (blacklist[i] === selector) {
+            return errorReport(result, ruleName, rule, messages.rejected(selector));
           }
 
         } else if (typeof blacklist[i] === "object") {
           for (const key in blacklist[i]) {
-            if (key.indexOf(rule.selector) >= 0) {
+            if (key.indexOf(selector) >= 0) {
               return errorReport(result, ruleName, rule, blacklist[i][key]);
             }
 
