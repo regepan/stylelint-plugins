@@ -5,7 +5,6 @@ const ruleMessages = require("../../utils/ruleMessages");
 const validateOptions = require("../../utils/validateOptions");
 const _ = require("lodash");
 const utils = require('../../utils');
-const isStandardSyntaxAtRule = require('../../utils/isStandardSyntaxAtRule');
 
 const ruleName = utils.namespace('media-query-variables');
 
@@ -40,7 +39,7 @@ const rule = function (actual) {
 
       if (params.indexOf("min-width") > -1 && params.indexOf("$grid-float-breakpoint") > -1) {
         if (params.indexOf("-max") === -1) {
-          return true;
+          return;
         }
       }
 
