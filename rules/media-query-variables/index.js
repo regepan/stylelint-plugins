@@ -9,7 +9,7 @@ const utils = require('../../utils');
 const ruleName = utils.namespace('media-query-variables');
 
 const messages = ruleMessages(ruleName, {
-  rejected: (selector) => `"min" & "max" is not match on @media query. Can use only one of them.`
+  rejected: (params) => `${params} 'min' & 'max' is not match.`
 });
 
 const errorReport = function (result, ruleName, rule, message) {
@@ -37,15 +37,20 @@ const rule = function (actual) {
       const countMin = (params.match(/min/g) || []).length;
       const countMax = (params.match(/max/g) || []).length;
 
+      if (params.indexOf("px") > -1) {
+        return;
+      }
+
       if (params.indexOf("min-width") > -1 && params.indexOf("$grid-float-breakpoint") > -1) {
         if (params.indexOf("-max") === -1) {
           return;
         }
       }
 
-      if (countMin === 1 && countMax === 1) {
+      if ((countMin % 2 === 1) || (countMax % 2 === 1)) {
+        console.log(countMin, countMax);
         report({
-          message: messages.rejected(),
+          message: messages.rejected(params),
           node: atRule,
           result,
           ruleName,
