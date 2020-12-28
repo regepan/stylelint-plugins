@@ -48,7 +48,6 @@ const rule = function (actual) {
       }
 
       if ((countMin % 2 === 1) || (countMax % 2 === 1)) {
-        console.log(countMin, countMax);
         report({
           message: messages.rejected(params),
           node: atRule,
